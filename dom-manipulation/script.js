@@ -124,3 +124,68 @@ newQuoteButton.addEventListener('click', () => {
 
 // Initial setup
 populateCategories();
+
+async function fetchFromServer() {
+  try {
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts');
+    if (!res.ok) throw new Error('Network response not ok');
+    return await res.json();
+  } catch (e) {
+    console.error('Fetch error:', e);
+    return null;
+  }
+}
+
+async function sendToServer(quote) {
+  try {
+    const res = await fetch('https://jsonplaceholder.typicode.com/posts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(quote),
+    });
+    if (!res.ok) throw new Error('Server error');
+    return await res.json(); // mocked response
+  } catch (e) {
+    console.error('Send error:', e);
+    return null;
+  }
+}
+
+async function syncWithServer() {
+  const serverData = await fetchFromServer();
+  if (!serverData) return;
+
+  const serverQuotes = serverData.map(item => ({
+    text: item.title, category: item.body
+  }));
+
+  const localJson = JSON.stringify(quotes);
+  const serverJson = JSON.stringify(serverQuotes);
+
+  if (localJson !== serverJson) {
+    quotes = serverQuotes;
+    localStorage.setItem('quotes', JSON.stringify(quotes));
+    alert('Quotes updated from server');
+    populateCategories();
+    filterQuotes();
+  }
+}
+
+// Run sync every minute
+setInterval(syncWithServer, 60000);
+
+async function addQuote() {
+  // existing input/validation logic...
+
+  quotes.push({ text, category });
+  localStorage.setItem('quotes', JSON.stringify(quotes));
+
+  const serverResponse = await sendToServer({ title: text, body: category });
+  if (serverResponse) {
+    alert('Quote sent to server');
+    await syncWithServer(); // ensure match
+  }
+
+  textInput.value = '';
+  categoryInput.value = '';
+}
