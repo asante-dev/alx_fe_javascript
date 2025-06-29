@@ -223,8 +223,18 @@ async function syncQuotes() {
     quotes = serverQuotes;
     localStorage.setItem('quotes', JSON.stringify(quotes));
 
-    alert("Quotes have been updated from the server.");
+    showSyncMessage("✅ Quotes synced with server!");
     populateCategories();
     filterQuotes();
   }
+}
+
+function showSyncMessage(message, duration = 3000) {
+  const notice = document.getElementById('syncNotice');
+  notice.textContent = message;
+  notice.style.display = 'block';
+
+  setTimeout(() => {
+    notice.style.display = 'none';
+  }, duration);
 }
