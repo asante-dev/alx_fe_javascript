@@ -209,3 +209,22 @@ async function fetchQuotesFromServer() {
     return [];
   }
 }
+
+async function syncQuotes() {
+  const serverQuotes = await fetchQuotesFromServer();
+  if (serverQuotes.length === 0) return;
+
+  // Check if local and server data are different
+  const localJson = JSON.stringify(quotes);
+  const serverJson = JSON.stringify(serverQuotes);
+
+  if (localJson !== serverJson) {
+    // Conflict resolution strategy: server wins
+    quotes = serverQuotes;
+    localStorage.setItem('quotes', JSON.stringify(quotes));
+
+    alert("Quotes have been updated from the server.");
+    populateCategories();
+    filterQuotes();
+  }
+}
