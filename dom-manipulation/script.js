@@ -189,3 +189,23 @@ async function addQuote() {
   textInput.value = '';
   categoryInput.value = '';
 }
+
+async function fetchQuotesFromServer() {
+  try {
+    const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+    if (!response.ok) throw new Error('Network response was not ok');
+
+    const data = await response.json();
+
+    // Simulate quotes by mapping JSONPlaceholder post data
+    const serverQuotes = data.slice(0, 10).map(post => ({
+      text: post.title,
+      category: post.body || "General"
+    }));
+
+    return serverQuotes;
+  } catch (error) {
+    console.error('Error fetching quotes from server:', error);
+    return [];
+  }
+}
