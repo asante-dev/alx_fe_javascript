@@ -263,4 +263,56 @@ function exportQuotes() {
     // Clean up
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+  }
+
+  function importFromJsonFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const fileReader = new FileReader();
+  
+  fileReader.onload = function(e) {
+    try {
+      const importedQuotes = JSON.parse(e.target.result);
+      
+      // Basic validation
+      if (!Array.isArray(importedQuotes)) {
+        throw new Error("Imported file should contain an array of quotes");
+      }
+      
+      // Validate each quote
+      const validQuotes = importedQuotes.filter(quote => {
+        return quote.text && quote.category;
+      });
+      
+      if (validQuotes.length === 0) {
+        throw new Error("No valid quotes found in the file");
+      }
+      
+      // Add to existing quotes
+      quotes.push(...validQuotes);
+      
+      // Save to localStorage
+      localStorage.setItem('quotes', JSON.stringify(quotes));
+      
+      // Update UI
+      populateCategories();
+      filterQuotes();
+      
+      alert(`Successfully imported ${validQuotes.length} quotes!`);
+    } catch (error) {
+      console.error("Import error:", error);
+      alert(`Error importing quotes: ${error.message}`);
+    }
+    
+    // Reset the file input
+    event.target.value = '';
+  };
+  
+  fileReader.onerror = function() {
+    alert("Error reading file");
+    event.target.value = '';
+  };
+  
+  fileReader.readAsText(file);
 }

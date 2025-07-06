@@ -23,7 +23,13 @@
   </select>
 
   <button onclick="exportQuotes()">Export Quotes</button>
-  
+  <div>
+  <input type="file" id="importFile" accept=".json" onchange="importFromJsonFile(event)" />
+  <label for="importFile">Import Quotes from JSON</label>
+</div>
+
+
+
     <div id="syncNotice" style="display: none; background-color: #f0f8ff; padding: 10px; margin: 10px 0; border: 1px solid #ccc;"></div>
 
     <script src="script.js"></script>
