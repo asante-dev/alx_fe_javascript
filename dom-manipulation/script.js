@@ -238,3 +238,29 @@ function showSyncMessage(message, duration = 3000) {
     notice.style.display = 'none';
   }, duration);
 }
+
+function exportQuotes() {
+    // Convert quotes to JSON string
+    const dataStr = JSON.stringify(quotes, null, 2);
+    
+    // Create a Blob with the JSON data
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    
+    // Create a download link
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    
+    // Set the filename for the download
+    const date = new Date();
+    const timestamp = date.toISOString().replace(/[:.]/g, '-');
+    link.download = `quotes-${timestamp}.json`;
+    
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+    
+    // Clean up
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
